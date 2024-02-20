@@ -7,7 +7,7 @@ services:
   payhere-app:
     image: payhere-app:latest
     ports:
-      - "3000:3300"
+      - "3000:3000"
     depends_on:
       - payhere-db
     networks:
@@ -30,3 +30,4 @@ services:
       - payhere-nw
     volumes:
       - ./source/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./source/my.cnf:/etc/mysql/conf.d/my.cnf
