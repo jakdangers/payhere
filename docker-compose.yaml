@@ -1,0 +1,32 @@
+version: '3.0'
+
+networks:
+  payhere-nw:
+
+services:
+  payhere-app:
+    image: payhere-app:latest
+    ports:
+      - "3000:3300"
+    depends_on:
+      - payhere-db
+    networks:
+      - payhere-nw
+
+  payhere-db:
+    image: mysql:5.7
+    platform: linux/amd64
+    container_name: payhere-mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: payhere
+      MYSQL_DATABASE: payhere
+      MYSQL_USER: payhere
+      MYSQL_PASSWORD: payhere
+    ports:
+      - "3306:3306"
+    networks:
+      - payhere-nw
+    volumes:
+      - ./source/init.sql:/docker-entrypoint-initdb.d/init.sql

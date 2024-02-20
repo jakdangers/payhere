@@ -1,0 +1,34 @@
+help: ## 도움말
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+.PHONY: help
+
+run: swag ## 로컬 실행
+	@echo "run the main.go file"
+	@go mod tidy && go mod download && go run ./cmd/app/main.go
+.PHONY: run
+
+build-dev: swag ## 빌드 데브 컨테이너
+	@echo "build dev binary file"
+	@docker build -t payhere-app .
+.PHONY: build-dev
+
+swag: ### 스웨거 초기화
+	@echo "swag init"
+	@swag init -g cmd/app/main.go
+.PHONY: swag
+
+mock: ### 목커리 실행
+	@mockery --all --keeptree --dir $(PWD)/internal --output $(PWD)/mocks --disable-version-string
+.PHONY: mock
+
+test: ### 모든 테스트 실행
+	go test -v -cover -race ./internal/...
+.PHONY: test
+
+compose-up: ### 도커 컴포즈 실행
+	docker-compose up -d
+.PHONY: compose-up
+
+compose-down: ### 도커 컴포즈 다운
+	docker-compose down
+.PHONY: compose-down
