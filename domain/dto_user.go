@@ -40,3 +40,27 @@ func isValidPhoneNumber(userID string) bool {
 func isValidPassword(password string) bool {
 	return passwordPattern.MatchString(password)
 }
+
+type LoginUserRequest struct {
+	UserID   string `json:"userID"`
+	Password string `json:"password"`
+}
+
+func (ur LoginUserRequest) Validate() error {
+	const op cerrors.Op = "user/controller/valid"
+
+	if !isValidPhoneNumber(ur.UserID) {
+		return cerrors.E(op, cerrors.Invalid, "아이디 또는 비밀번호를 확인해주세요.")
+	}
+
+	if !isValidPassword(ur.Password) {
+		return cerrors.E(op, cerrors.Invalid, "아이디 또는 비밀번호를 확인해주세요.")
+	}
+
+	return nil
+}
+
+type LoginUserResponse struct {
+	AccessToken string `json:"accessToken"`
+	ExpiresIn   int64  `json:"expires_in"`
+}

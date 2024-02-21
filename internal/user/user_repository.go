@@ -21,7 +21,7 @@ func NewUserRepository(sqlDB *sql.DB) *userRepository {
 var _ domain.UserRepository = (*userRepository)(nil)
 
 func (u userRepository) CreateUser(ctx context.Context, user domain.User) (int, error) {
-	const op cerrors.Op = "user/repository/createUser"
+	const op cerrors.Op = "user/userRepository/createUser"
 
 	result, err := u.sqlDB.ExecContext(ctx, createUserQuery, user.UserID, user.Password, user.UseType)
 	if err != nil {
@@ -37,7 +37,7 @@ func (u userRepository) CreateUser(ctx context.Context, user domain.User) (int, 
 }
 
 func (u userRepository) FindByUserID(ctx context.Context, userID string) (*domain.User, error) {
-	const op cerrors.Op = "user/repository/findByUserID"
+	const op cerrors.Op = "user/userRepository/findByUserID"
 	var user domain.User
 
 	err := u.sqlDB.QueryRowContext(ctx, findByUserIDQuery, userID).

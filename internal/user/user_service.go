@@ -15,11 +15,11 @@ var (
 )
 
 type userService struct {
-	repository domain.UserRepository
+	userRepository domain.UserRepository
 }
 
-func NewUserService(repo domain.UserRepository) *userService {
-	return &userService{repository: repo}
+func NewUserService(userRepository domain.UserRepository) *userService {
+	return &userService{userRepository: userRepository}
 }
 
 var _ domain.UserService = (*userService)(nil)
@@ -32,7 +32,7 @@ func (u userService) CreateUser(ctx context.Context, req domain.CreateUserReques
 		return err
 	}
 
-	user, err := u.repository.FindByUserID(ctx, phoneNumber)
+	user, err := u.userRepository.FindByUserID(ctx, phoneNumber)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (u userService) CreateUser(ctx context.Context, req domain.CreateUserReques
 		return cerrors.E(op, cerrors.Internal, err, "서버 에러가 발생했습니다.")
 	}
 
-	_, err = u.repository.CreateUser(ctx, domain.User{
+	_, err = u.userRepository.CreateUser(ctx, domain.User{
 		UserID:   phoneNumber,
 		Password: hashedPassword,
 		UseType:  domain.UserUseTypePlace,
@@ -55,6 +55,27 @@ func (u userService) CreateUser(ctx context.Context, req domain.CreateUserReques
 	}
 
 	return nil
+}
+
+func (u userService) LoginUser(ctx context.Context, req domain.LoginUserRequest) (domain.LoginUserResponse, error) {
+	const op cerrors.Op = "user/service/createUser"
+
+	phoneNumber, err := validateAndNormalizePhoneNumber(req.UserID)
+	if err != nil {
+		return domain.LoginUserResponse{}, err
+	}
+
+	user, err := u.userRepository.FindByUserID(ctx, phoneNumber)
+	if err != nil {
+		return domain.LoginUserResponse{}, err
+	}
+	if user == nil {
+		return domain.LoginUserResponse{}, cerrors.E(op, cerrors.Invalid, "아이디 또는 비밀번호를 확인해주세요.")
+	}
+
+	if !compareHashAndPassword(req.Password, user.Password) {
+		return domain.LoginUserResponse{}, cerrors.E(op, cerrors.Invalid, "아이디 또는 비밀번호를 확인해주세요.")
+	}
 }
 
 func hashPasswordWithSalt(password string) (string, error) {
@@ -71,7 +92,7 @@ func validateAndNormalizePhoneNumber(phoneNumber string) (string, error) {
 	const op cerrors.Op = "user/service/validateAndNormalizePhoneNumber"
 
 	if !phoneNumberPattern.MatchString(phoneNumber) {
-		return "", cerrors.E(op, cerrors.Invalid, "잘못된 전화번호입니다.")
+		return "", cerrors.E(op, cerrors.Invalid, "잘못된 휴대폰번호입니다.")
 	}
 
 	if hasHyphenPattern.MatchString(phoneNumber) {

@@ -11,6 +11,7 @@ import (
 
 func RegisterRoutes(e *gin.Engine, controller domain.UserController) {
 	e.POST("/users", controller.CreateUser)
+	e.POST("/users/login", controller.LoginUser)
 }
 
 type userController struct {
@@ -47,4 +48,29 @@ func (u userController) CreateUser(c *gin.Context) {
 	}
 
 	c.Status(http.StatusNoContent)
+}
+
+func (u userController) LoginUser(c *gin.Context) {
+	var req domain.LoginUserRequest
+
+	if err := c.ShouldBind(&req); err != nil {
+		c.JSON(cerrors.ToSentinelAPIError(err))
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		c.JSON(cerrors.ToSentinelAPIError(err))
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 30*time.Second)
+	defer cancel()
+
+	res, err := u.service.LoginUser(ctx, req)
+	if err != nil {
+		c.JSON(cerrors.ToSentinelAPIError(err))
+		return
+	}
+
+	c.JSON(http.StatusOK, res)
 }
