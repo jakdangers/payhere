@@ -18,7 +18,7 @@ swag: ### 스웨거 초기화
 .PHONY: swag
 
 mock: ### 목커리 실행
-	@mockery --all --keeptree --dir $(PWD)/internal --output $(PWD)/mocks --disable-version-string
+	@mockery
 .PHONY: mock
 
 test: ### 모든 테스트 실행
