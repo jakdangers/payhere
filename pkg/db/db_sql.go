@@ -1,22 +1,22 @@
 package db
 
 import (
+	"database/sql"
 	"fmt"
-	"github.com/jmoiron/sqlx"
+	_ "github.com/go-sql-driver/mysql"
 	"go.uber.org/fx"
-	"log"
 	"payhere/config"
 	"time"
 )
 
-var SqlxModule = fx.Module("sqlx", fx.Provide(NewSqlx))
+var SqlModule = fx.Module("sql", fx.Provide(NewSql))
 
-func NewSqlx(cfg *config.Config) (*sqlx.DB, error) {
+func NewSql(cfg *config.Config) (*sql.DB, error) {
 	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", cfg.Mysql.User, cfg.Mysql.Password, cfg.Mysql.Host, cfg.Mysql.Port, cfg.Mysql.DbName)
 
-	db, err := sqlx.Connect("mysql", dataSourceName)
+	db, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
-		log.Fatalln(err)
+		panic(err)
 	}
 
 	db.SetConnMaxLifetime(time.Minute * 3)

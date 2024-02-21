@@ -3,7 +3,6 @@ package httpserver
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
 	"log"
@@ -19,7 +18,6 @@ type NewHTTPServerParams struct {
 
 func NewHTTPServer(lc fx.Lifecycle, params NewHTTPServerParams) {
 	srv := &http.Server{Addr: params.Config.HTTP.Port, Handler: params.Engine}
-	fmt.Println(params.Config.HTTP.Port)
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
