@@ -10,3 +10,7 @@ mysql:
   user: payhere
   dbName: payhere
   password: payhere
+
+auth:
+  secret: payhere
+  expiryHours: 24

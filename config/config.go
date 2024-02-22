@@ -10,6 +10,7 @@ type Config struct {
 	App   `mapstructure:"app"`
 	HTTP  `mapstructure:"http"`
 	Mysql `mapstructure:"mysql"`
+	Auth  `mapstructure:"auth"`
 }
 
 type App struct {
@@ -26,6 +27,11 @@ type Mysql struct {
 	User     string `mapstructure:"user"`
 	Password string `mapstructure:"password"`
 	DbName   string `mapstructure:"dbName"`
+}
+
+type Auth struct {
+	Secret      string `mapstructure:"secret`
+	ExpiryHours int    `mapstructure:"expiryHours"`
 }
 
 var configMode = "dev"

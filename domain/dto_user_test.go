@@ -21,7 +21,7 @@ func TestIsValidPhoneNumber(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		actualValid := isValidPhoneNumber(test.input)
+		actualValid := isValidMobileID(test.input)
 		if actualValid != test.want {
 			t.Errorf("Expected validity for input %s to be %t, but got %t", test.input, test.want, actualValid)
 		}

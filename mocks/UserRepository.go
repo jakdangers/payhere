@@ -75,8 +75,8 @@ func (_c *UserRepository_CreateUser_Call) RunAndReturn(run func(context.Context,
 	return _c
 }
 
-// FindByUserID provides a mock function with given fields: ctx, userID
-func (_m *UserRepository) FindByUserID(ctx context.Context, userID string) (*domain.User, error) {
+// FindUserByMobileID provides a mock function with given fields: ctx, userID
+func (_m *UserRepository) FindUserByMobileID(ctx context.Context, userID string) (*domain.User, error) {
 	ret := _m.Called(ctx, userID)
 
 	var r0 *domain.User
@@ -101,31 +101,31 @@ func (_m *UserRepository) FindByUserID(ctx context.Context, userID string) (*dom
 	return r0, r1
 }
 
-// UserRepository_FindByUserID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FindByUserID'
-type UserRepository_FindByUserID_Call struct {
+// UserRepository_FindUserByMobileID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FindUserByMobileID'
+type UserRepository_FindUserByMobileID_Call struct {
 	*mock.Call
 }
 
-// FindByUserID is a helper method to define mock.On call
+// FindUserByMobileID is a helper method to define mock.On call
 //   - ctx context.Context
 //   - userID string
-func (_e *UserRepository_Expecter) FindByUserID(ctx interface{}, userID interface{}) *UserRepository_FindByUserID_Call {
-	return &UserRepository_FindByUserID_Call{Call: _e.mock.On("FindByUserID", ctx, userID)}
+func (_e *UserRepository_Expecter) FindUserByMobileID(ctx interface{}, userID interface{}) *UserRepository_FindUserByMobileID_Call {
+	return &UserRepository_FindUserByMobileID_Call{Call: _e.mock.On("FindUserByMobileID", ctx, userID)}
 }
 
-func (_c *UserRepository_FindByUserID_Call) Run(run func(ctx context.Context, userID string)) *UserRepository_FindByUserID_Call {
+func (_c *UserRepository_FindUserByMobileID_Call) Run(run func(ctx context.Context, userID string)) *UserRepository_FindUserByMobileID_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(string))
 	})
 	return _c
 }
 
-func (_c *UserRepository_FindByUserID_Call) Return(_a0 *domain.User, _a1 error) *UserRepository_FindByUserID_Call {
+func (_c *UserRepository_FindUserByMobileID_Call) Return(_a0 *domain.User, _a1 error) *UserRepository_FindUserByMobileID_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *UserRepository_FindByUserID_Call) RunAndReturn(run func(context.Context, string) (*domain.User, error)) *UserRepository_FindByUserID_Call {
+func (_c *UserRepository_FindUserByMobileID_Call) RunAndReturn(run func(context.Context, string) (*domain.User, error)) *UserRepository_FindUserByMobileID_Call {
 	_c.Call.Return(run)
 	return _c
 }

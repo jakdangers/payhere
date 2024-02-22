@@ -21,9 +21,9 @@ func NewUserRepository(sqlDB *sql.DB) *userRepository {
 var _ domain.UserRepository = (*userRepository)(nil)
 
 func (u userRepository) CreateUser(ctx context.Context, user domain.User) (int, error) {
-	const op cerrors.Op = "user/repository/createUser"
+	const op cerrors.Op = "user/userRepository/createUser"
 
-	result, err := u.sqlDB.ExecContext(ctx, createUserQuery, user.UserID, user.Password, user.UseType)
+	result, err := u.sqlDB.ExecContext(ctx, createUserQuery, user.MobileID, user.Password, user.UseType)
 	if err != nil {
 		return 0, cerrors.E(op, cerrors.Internal, err, "서버 에러가 발생했습니다.")
 	}
@@ -36,12 +36,12 @@ func (u userRepository) CreateUser(ctx context.Context, user domain.User) (int, 
 	return int(userID), nil
 }
 
-func (u userRepository) FindByUserID(ctx context.Context, userID string) (*domain.User, error) {
-	const op cerrors.Op = "user/repository/findByUserID"
+func (u userRepository) FindUserByMobileID(ctx context.Context, mobileID string) (*domain.User, error) {
+	const op cerrors.Op = "user/userRepository/findByUserID"
 	var user domain.User
 
-	err := u.sqlDB.QueryRowContext(ctx, findByUserIDQuery, userID).
-		Scan(&user.ID, &user.UserID, &user.Password, &user.UseType)
+	err := u.sqlDB.QueryRowContext(ctx, findUserByMobileIDQuery, mobileID).
+		Scan(&user.ID, &user.MobileID, &user.Password, &user.UseType)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
