@@ -86,6 +86,39 @@ func (_c *UserController_LoginUser_Call) RunAndReturn(run func(*gin.Context)) *U
 	return _c
 }
 
+// LogoutUser provides a mock function with given fields: c
+func (_m *UserController) LogoutUser(c *gin.Context) {
+	_m.Called(c)
+}
+
+// UserController_LogoutUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LogoutUser'
+type UserController_LogoutUser_Call struct {
+	*mock.Call
+}
+
+// LogoutUser is a helper method to define mock.On call
+//   - c *gin.Context
+func (_e *UserController_Expecter) LogoutUser(c interface{}) *UserController_LogoutUser_Call {
+	return &UserController_LogoutUser_Call{Call: _e.mock.On("LogoutUser", c)}
+}
+
+func (_c *UserController_LogoutUser_Call) Run(run func(c *gin.Context)) *UserController_LogoutUser_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(*gin.Context))
+	})
+	return _c
+}
+
+func (_c *UserController_LogoutUser_Call) Return() *UserController_LogoutUser_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *UserController_LogoutUser_Call) RunAndReturn(run func(*gin.Context)) *UserController_LogoutUser_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewUserController creates a new instance of UserController. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewUserController(t interface {

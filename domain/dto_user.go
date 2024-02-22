@@ -6,19 +6,19 @@ import (
 )
 
 var (
-	phonePattern    = regexp.MustCompile(`^(010-\d{4}-\d{4}|010\d{8})$`)
+	mobileIDPattern = regexp.MustCompile(`^(010-\d{4}-\d{4}|010\d{8})$`)
 	passwordPattern = regexp.MustCompile(`^[A-Za-z0-9@$!%*?&]{1,255}$`)
 )
 
 type CreateUserRequest struct {
-	UserID   string `json:"userID"`
+	MobileID string `json:"mobileID"`
 	Password string `json:"password"`
 }
 
 func (ur CreateUserRequest) Validate() error {
 	const op cerrors.Op = "user/controller/valid"
 
-	if !isValidPhoneNumber(ur.UserID) {
+	if !isValidMobileID(ur.MobileID) {
 		return cerrors.E(op, cerrors.Invalid, "잘못된 휴대폰번호입니다.")
 	}
 
@@ -31,8 +31,8 @@ func (ur CreateUserRequest) Validate() error {
 
 // IsValidPhoneNumber
 // 요구사항에 별도의 휴대폰번호 형식이 특정되어 있지 않아 하이픈이 있는 경우와 없는 경우를 모두 허용하도록 구현
-func isValidPhoneNumber(userID string) bool {
-	return phonePattern.MatchString(userID)
+func isValidMobileID(userID string) bool {
+	return mobileIDPattern.MatchString(userID)
 }
 
 // IsValidPassword
@@ -42,14 +42,14 @@ func isValidPassword(password string) bool {
 }
 
 type LoginUserRequest struct {
-	UserID   string `json:"userID"`
+	MobileID string `json:"mobileID"`
 	Password string `json:"password"`
 }
 
 func (ur LoginUserRequest) Validate() error {
 	const op cerrors.Op = "user/controller/valid"
 
-	if !isValidPhoneNumber(ur.UserID) {
+	if !isValidMobileID(ur.MobileID) {
 		return cerrors.E(op, cerrors.Invalid, "아이디 또는 비밀번호를 확인해주세요.")
 	}
 
@@ -62,5 +62,10 @@ func (ur LoginUserRequest) Validate() error {
 
 type LoginUserResponse struct {
 	AccessToken string `json:"accessToken"`
-	ExpiresIn   int64  `json:"expires_in"`
+	ExpiresIn   int64  `json:"expiresIn"`
+}
+
+type LogoutUserRequest struct {
+	UserID      int    `json:"userID"`
+	AccessToken string `json:"accessToken"`
 }

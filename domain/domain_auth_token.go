@@ -11,10 +11,11 @@ type AuthToken struct {
 	JwtToken       string
 	CreationTime   time.Time
 	ExpirationTime time.Time
-	LastAccessTime time.Time
-	IsLoggedOut    bool
+	Active         bool
 }
 
 type AuthTokenRepository interface {
+	CreateAuthToken(ctx context.Context, token AuthToken) (int, error)
+	DeactivateAuthToken(ctx context.Context, params DeactivateAuthTokenParams) error
 	FindAuthTokenByUserIDAndJwtToken(ctx context.Context, params FindByUserIDAndJwtTokenParams) (AuthToken, error)
 }

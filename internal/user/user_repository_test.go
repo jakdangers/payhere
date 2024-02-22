@@ -53,13 +53,14 @@ func Test_userRepository_CreateUser(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				user: domain.User{
-					UserID:   "01012345678",
+					MobileID: "01012345678",
 					Password: "password",
 					UseType:  domain.UserUseTypePlace,
 				},
 			},
 			mock: func(ts userRepositoryTestSuite) {
-				ts.sqlMock.ExpectExec("INSERT INTO `users` (.+)").
+				ts.sqlMock.ExpectExec("INSERT INTO `users`").
+					WithArgs("01012345678", "password", "PLACE").
 					WillReturnResult(sqlmock.NewResult(1, 1))
 			},
 			want:    1,
@@ -70,13 +71,14 @@ func Test_userRepository_CreateUser(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				user: domain.User{
-					UserID:   "01012345678",
+					MobileID: "01012345678",
 					Password: "password",
 					UseType:  domain.UserUseTypePlace,
 				},
 			},
 			mock: func(ts userRepositoryTestSuite) {
-				ts.sqlMock.ExpectExec("INSERT INTO `users` (.+)").
+				ts.sqlMock.ExpectExec("INSERT INTO `users`").
+					WithArgs("01012345678", "password", "PLACE").
 					WillReturnError(&mysql.MySQLError{Number: 1062, Message: "Duplicate entry"})
 			},
 			want:    0,
@@ -122,16 +124,16 @@ func Test_userRepository_FindByUserID(t *testing.T) {
 				userID: "01012345678",
 			},
 			mock: func(ts userRepositoryTestSuite) {
-				query := "SELECT id, user_id, password, user_type FROM `users` WHERE user_id = ?"
+				query := "SELECT id, mobile_id, password, use_type FROM `users`"
 				columns := []string{"id", "user_id", "password", "user_type"}
 				rows := sqlmock.NewRows(columns).AddRow(1, "01012345678", "password", "PLACE")
-				ts.sqlMock.ExpectQuery(query).WillReturnRows(rows)
+				ts.sqlMock.ExpectQuery(query).WithArgs("01012345678").WillReturnRows(rows)
 			},
 			want: &domain.User{
 				Base: domain.Base{
 					ID: 1,
 				},
-				UserID:   "01012345678",
+				MobileID: "01012345678",
 				Password: "password",
 				UseType:  domain.UserUseTypePlace,
 			},
@@ -144,8 +146,8 @@ func Test_userRepository_FindByUserID(t *testing.T) {
 				userID: "01012345678",
 			},
 			mock: func(ts userRepositoryTestSuite) {
-				query := "SELECT id, user_id, password, user_type FROM `users` WHERE user_id = ?"
-				ts.sqlMock.ExpectQuery(query).WillReturnError(sql.ErrNoRows)
+				query := "SELECT id, mobile_id, password, use_type FROM `users`"
+				ts.sqlMock.ExpectQuery(query).WithArgs("01012345678").WillReturnError(sql.ErrNoRows)
 			},
 			want:    nil,
 			wantErr: false,
@@ -159,7 +161,7 @@ func Test_userRepository_FindByUserID(t *testing.T) {
 			tt.mock(ts)
 
 			// when
-			got, err := ts.userRepository.FindByUserID(tt.args.ctx, tt.args.userID)
+			got, err := ts.userRepository.FindUserByMobileID(tt.args.ctx, tt.args.userID)
 
 			// then
 			assert.Equal(t, tt.want, got)

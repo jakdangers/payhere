@@ -7,17 +7,19 @@ import (
 
 type UserRepository interface {
 	CreateUser(ctx context.Context, user User) (int, error)
-	FindByUserID(ctx context.Context, userID string) (*User, error)
+	FindUserByMobileID(ctx context.Context, userID string) (*User, error)
 }
 
 type UserService interface {
 	CreateUser(ctx context.Context, req CreateUserRequest) error
 	LoginUser(ctx context.Context, req LoginUserRequest) (LoginUserResponse, error)
+	LogoutUser(ctx context.Context, req LogoutUserRequest) error
 }
 
 type UserController interface {
 	CreateUser(c *gin.Context)
 	LoginUser(c *gin.Context)
+	LogoutUser(c *gin.Context)
 }
 
 type UserUseType string
@@ -28,7 +30,7 @@ const (
 
 type User struct {
 	Base
-	UserID   string
+	MobileID string
 	Password string
 	UseType  UserUseType
 }

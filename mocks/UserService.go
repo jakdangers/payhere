@@ -118,6 +118,49 @@ func (_c *UserService_LoginUser_Call) RunAndReturn(run func(context.Context, dom
 	return _c
 }
 
+// LogoutUser provides a mock function with given fields: ctx, req
+func (_m *UserService) LogoutUser(ctx context.Context, req domain.LogoutUserRequest) error {
+	ret := _m.Called(ctx, req)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, domain.LogoutUserRequest) error); ok {
+		r0 = rf(ctx, req)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UserService_LogoutUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LogoutUser'
+type UserService_LogoutUser_Call struct {
+	*mock.Call
+}
+
+// LogoutUser is a helper method to define mock.On call
+//   - ctx context.Context
+//   - req domain.LogoutUserRequest
+func (_e *UserService_Expecter) LogoutUser(ctx interface{}, req interface{}) *UserService_LogoutUser_Call {
+	return &UserService_LogoutUser_Call{Call: _e.mock.On("LogoutUser", ctx, req)}
+}
+
+func (_c *UserService_LogoutUser_Call) Run(run func(ctx context.Context, req domain.LogoutUserRequest)) *UserService_LogoutUser_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(domain.LogoutUserRequest))
+	})
+	return _c
+}
+
+func (_c *UserService_LogoutUser_Call) Return(_a0 error) *UserService_LogoutUser_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *UserService_LogoutUser_Call) RunAndReturn(run func(context.Context, domain.LogoutUserRequest) error) *UserService_LogoutUser_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewUserService creates a new instance of UserService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewUserService(t interface {
