@@ -12,7 +12,7 @@ import (
 var SqlModule = fx.Module("sql", fx.Provide(NewSql))
 
 func NewSql(cfg *config.Config) (*sql.DB, error) {
-	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", cfg.Mysql.User, cfg.Mysql.Password, cfg.Mysql.Host, cfg.Mysql.Port, cfg.Mysql.DbName)
+	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", cfg.Mysql.User, cfg.Mysql.Password, cfg.Mysql.Host, cfg.Mysql.Port, cfg.Mysql.DbName)
 
 	db, err := sql.Open("mysql", dataSourceName)
 	if err != nil {

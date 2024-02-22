@@ -32,18 +32,28 @@ type Error struct {
 // Error 관련
 func (e *Error) Error() string {
 	b := new(bytes.Buffer)
+
 	if e.Op != "" {
 		pad(b, ": ")
 		b.WriteString(string(e.Op))
 	}
+
 	if e.Kind != 0 {
 		pad(b, ": ")
 		b.WriteString(e.Kind.String())
 	}
+
 	if e.Err != nil {
-		pad(b, ": ")
-		b.WriteString(e.Err.Error())
+		var prevErr *Error
+		if errors.As(e.Err, &prevErr) {
+			pad(b, Separator)
+			b.WriteString(e.Err.Error())
+		} else {
+			pad(b, ": ")
+			b.WriteString(e.Err.Error())
+		}
 	}
+
 	if b.Len() == 0 {
 		return "no error"
 	}
