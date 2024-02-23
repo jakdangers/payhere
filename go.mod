@@ -14,6 +14,7 @@ require (
 	github.com/swaggo/swag v1.16.3
 	go.uber.org/fx v1.20.1
 	golang.org/x/crypto v0.19.0
+	k8s.io/utils v0.0.0-20240102154912-e7106e64919e
 )
 
 require (

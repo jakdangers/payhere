@@ -4,6 +4,7 @@ import (
 	"go.uber.org/fx"
 	"payhere/config"
 	"payhere/internal/auth_token"
+	"payhere/internal/product"
 	"payhere/internal/user"
 	"payhere/pkg/db"
 	"payhere/pkg/httpserver"
@@ -18,12 +19,14 @@ func main() {
 		router.Module,
 
 		// domain module
-		user.Module,
 		auth_token.Module,
+		user.Module,
+		product.Module,
 
 		fx.Invoke(
 			// routes Invoke
 			user.RegisterRoutes,
+			product.RegisterRoutes,
 			// pkg Invoke
 			httpserver.NewHTTPServer,
 		),

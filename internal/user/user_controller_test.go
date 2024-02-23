@@ -443,8 +443,6 @@ func Test_userController_LoginUser(t *testing.T) {
 }
 
 func Test_userController_LogoutUser(t *testing.T) {
-	expirationTime := time.Now().UTC().Add(time.Hour * time.Duration(24))
-
 	tests := []struct {
 		name  string
 		input func() string
@@ -454,11 +452,15 @@ func Test_userController_LogoutUser(t *testing.T) {
 		{
 			name: "PASS - 유효한 토큰",
 			input: func() string {
-				tokenString, _ := auth_token.CreateAccessToken(domain.User{
-					Base: domain.Base{
-						ID: 1,
+				tokenString, _ := auth_token.CreateAccessToken(
+					domain.User{
+						Base: domain.Base{
+							ID: 1,
+						},
 					},
-				}, "payhere_test_secret", expirationTime)
+					"payhere_test_secret",
+					time.Now().UTC().Add(time.Hour*time.Duration(24)),
+				)
 
 				return tokenString
 			},
@@ -467,7 +469,7 @@ func Test_userController_LogoutUser(t *testing.T) {
 					mock.Anything,
 					mock.MatchedBy(func(params domain.FindByUserIDAndJwtTokenParams) bool { return params.UserID == 1 }),
 				).Return(domain.AuthToken{
-					ExpirationTime: expirationTime,
+					ExpirationTime: time.Now().UTC().Add(time.Hour * time.Duration(24)),
 					Active:         true,
 				}, nil).Once()
 				ts.userService.EXPECT().LogoutUser(
@@ -480,12 +482,15 @@ func Test_userController_LogoutUser(t *testing.T) {
 		{
 			name: "FAIL - 유효기한 지난 토큰",
 			input: func() string {
-				expirationTime := time.Now().UTC()
-				tokenString, _ := auth_token.CreateAccessToken(domain.User{
-					Base: domain.Base{
-						ID: 1,
+				tokenString, _ := auth_token.CreateAccessToken(
+					domain.User{
+						Base: domain.Base{
+							ID: 1,
+						},
 					},
-				}, "payhere_test_secret", expirationTime)
+					"payhere_test_secret",
+					time.Now().UTC(),
+				)
 
 				return tokenString
 			},
@@ -495,12 +500,15 @@ func Test_userController_LogoutUser(t *testing.T) {
 		{
 			name: "FAIL - 시크릿이 다른 경우",
 			input: func() string {
-				expirationTime := time.Now().UTC().Add(time.Hour * time.Duration(24))
-				tokenString, _ := auth_token.CreateAccessToken(domain.User{
-					Base: domain.Base{
-						ID: 1,
+				tokenString, _ := auth_token.CreateAccessToken(
+					domain.User{
+						Base: domain.Base{
+							ID: 1,
+						},
 					},
-				}, "payhere_diff_test_secret", expirationTime)
+					"payhere_diff_test_secret",
+					time.Now().UTC().Add(time.Hour*time.Duration(24)),
+				)
 
 				return tokenString
 			},
