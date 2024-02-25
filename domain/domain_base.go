@@ -6,8 +6,8 @@ import (
 )
 
 type Base struct {
-	ID          int
-	CreatedDate time.Time
-	UpdatedDate time.Time
-	DeletedDate sql.NullTime
+	ID         int
+	CreateDate time.Time
+	UpdateDate time.Time
+	DeleteDate sql.NullTime
 }

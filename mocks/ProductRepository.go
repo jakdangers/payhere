@@ -173,25 +173,25 @@ func (_c *ProductRepository_GetProduct_Call) RunAndReturn(run func(context.Conte
 	return _c
 }
 
-// ListProducts provides a mock function with given fields: ctx
-func (_m *ProductRepository) ListProducts(ctx context.Context) ([]domain.Product, error) {
-	ret := _m.Called(ctx)
+// ListProducts provides a mock function with given fields: ctx, params
+func (_m *ProductRepository) ListProducts(ctx context.Context, params domain.ListProductsParams) ([]domain.Product, error) {
+	ret := _m.Called(ctx, params)
 
 	var r0 []domain.Product
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context) ([]domain.Product, error)); ok {
-		return rf(ctx)
+	if rf, ok := ret.Get(0).(func(context.Context, domain.ListProductsParams) ([]domain.Product, error)); ok {
+		return rf(ctx, params)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context) []domain.Product); ok {
-		r0 = rf(ctx)
+	if rf, ok := ret.Get(0).(func(context.Context, domain.ListProductsParams) []domain.Product); ok {
+		r0 = rf(ctx, params)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]domain.Product)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
-		r1 = rf(ctx)
+	if rf, ok := ret.Get(1).(func(context.Context, domain.ListProductsParams) error); ok {
+		r1 = rf(ctx, params)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -206,13 +206,14 @@ type ProductRepository_ListProducts_Call struct {
 
 // ListProducts is a helper method to define mock.On call
 //   - ctx context.Context
-func (_e *ProductRepository_Expecter) ListProducts(ctx interface{}) *ProductRepository_ListProducts_Call {
-	return &ProductRepository_ListProducts_Call{Call: _e.mock.On("ListProducts", ctx)}
+//   - params domain.ListProductsParams
+func (_e *ProductRepository_Expecter) ListProducts(ctx interface{}, params interface{}) *ProductRepository_ListProducts_Call {
+	return &ProductRepository_ListProducts_Call{Call: _e.mock.On("ListProducts", ctx, params)}
 }
 
-func (_c *ProductRepository_ListProducts_Call) Run(run func(ctx context.Context)) *ProductRepository_ListProducts_Call {
+func (_c *ProductRepository_ListProducts_Call) Run(run func(ctx context.Context, params domain.ListProductsParams)) *ProductRepository_ListProducts_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context))
+		run(args[0].(context.Context), args[1].(domain.ListProductsParams))
 	})
 	return _c
 }
@@ -222,7 +223,7 @@ func (_c *ProductRepository_ListProducts_Call) Return(_a0 []domain.Product, _a1 
 	return _c
 }
 
-func (_c *ProductRepository_ListProducts_Call) RunAndReturn(run func(context.Context) ([]domain.Product, error)) *ProductRepository_ListProducts_Call {
+func (_c *ProductRepository_ListProducts_Call) RunAndReturn(run func(context.Context, domain.ListProductsParams) ([]domain.Product, error)) *ProductRepository_ListProducts_Call {
 	_c.Call.Return(run)
 	return _c
 }

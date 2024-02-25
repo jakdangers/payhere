@@ -2,8 +2,9 @@ package product
 
 import (
 	"context"
+	"fmt"
 	"payhere/domain"
-	cerrors "payhere/pkg/cerror"
+	cerrors "payhere/pkg/cerrors"
 )
 
 type productService struct {
@@ -26,16 +27,16 @@ var _ domain.ProductService = (*productService)(nil)
 var hangulCHO = []string{"ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"}
 
 const (
-	hangulBASE = rune('가')
-	hangulEND  = rune('힣')
+	hangulBase = rune('가')
+	hangulEnd  = rune('힣')
 )
 
 func (ps productService) CreateProduct(ctx context.Context, req domain.CreateProductRequest) error {
-	const op cerrors.Op = "product/service/createProduct"
+	const op cerrors.Op = "product/service/CreateProduct"
 
 	_, err := ps.productRepository.CreateProduct(ctx, domain.Product{
 		UserID:      req.UserID,
-		Initial:     ExtractChosung(req.Name),
+		Initial:     extractChosung(req.Name),
 		Category:    req.Category,
 		Price:       req.Price,
 		Cost:        req.Cost,
@@ -53,10 +54,11 @@ func (ps productService) CreateProduct(ctx context.Context, req domain.CreatePro
 }
 
 func (ps productService) GetProduct(ctx context.Context, req domain.GetProductRequest) (domain.GetProductResponse, error) {
-	const op cerrors.Op = "product/service/getProduct"
+	const op cerrors.Op = "product/service/GetProduct"
 
 	product, err := ps.productRepository.GetProduct(ctx, req.ProductID)
 	if err != nil {
+		fmt.Println(err)
 		return domain.GetProductResponse{}, cerrors.E(op, cerrors.Internal, err, "상품을 조회하는 중에 에러가 발생했습니다.")
 	}
 	if product == nil {
@@ -72,7 +74,7 @@ func (ps productService) GetProduct(ctx context.Context, req domain.GetProductRe
 }
 
 func (ps productService) PatchProduct(ctx context.Context, req domain.PatchProductRequest) error {
-	const op cerrors.Op = "product/service/patchProduct"
+	const op cerrors.Op = "product/service/PatchProduct"
 
 	product, err := ps.productRepository.GetProduct(ctx, req.ID)
 	if err != nil {
@@ -96,7 +98,7 @@ func (ps productService) PatchProduct(ctx context.Context, req domain.PatchProdu
 	}
 	if req.Name != nil {
 		product.Name = *req.Name
-		product.Initial = ExtractChosung(*req.Name)
+		product.Initial = extractChosung(*req.Name)
 	}
 	if req.Description != nil {
 		product.Description = *req.Description
@@ -140,15 +142,58 @@ func (ps productService) DeleteProduct(ctx context.Context, req domain.DeletePro
 }
 
 func (ps productService) ListProducts(ctx context.Context, req domain.ListProductsRequest) (domain.ListProductsResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	const op cerrors.Op = "product/service/ListProducts"
+	params := domain.ListProductsParams{
+		UserID: req.UserID,
+		Cursor: req.Cursor,
+	}
+
+	if req.Search != nil && isKoreanChosung(*req.Search) {
+		params.Initial = req.Search
+	} else {
+		params.Name = req.Search
+	}
+
+	products, err := ps.productRepository.ListProducts(ctx, params)
+	if err != nil {
+		return domain.ListProductsResponse{}, cerrors.E(op, cerrors.Internal, err, "상품을 조회하는 중에 에러가 발생했습니다.")
+	}
+
+	var productDTOs []domain.ProductDTO
+	for _, product := range products {
+		productDTOs = append(productDTOs, domain.ProductDTOFrom(product))
+	}
+
+	var cursor *int
+	if len(productDTOs) > 0 {
+		cursor = &productDTOs[len(productDTOs)-1].ID
+	}
+
+	return domain.ListProductsResponse{
+		Products: productDTOs,
+		Cursor:   cursor,
+	}, nil
 }
 
-func ExtractChosung(s string) string {
+func isKoreanChosung(s string) bool {
+	hasChosung := false
+
+	for _, c := range []rune(s) {
+		if c >= hangulBase && c <= hangulEnd {
+			return false
+		}
+		if c >= 'ㄱ' && c <= 'ㅎ' {
+			hasChosung = true
+		}
+	}
+	return hasChosung
+}
+
+func extractChosung(s string) string {
 	result := ""
 	for _, c := range []rune(s) {
-		if c >= hangulBASE && c <= hangulEND {
-			offset := c - hangulBASE
+		if c >= hangulBase && c <= hangulEnd {
+			offset := c - hangulBase
 			choIndex := int(offset / 588)
 			result += hangulCHO[choIndex]
 		} else {

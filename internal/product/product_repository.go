@@ -4,8 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"payhere/domain"
-	cerrors "payhere/pkg/cerror"
+	cerrors "payhere/pkg/cerrors"
 	"time"
 )
 
@@ -22,9 +23,8 @@ func NewProductRepository(sqlDB *sql.DB) *productRepository {
 var _ domain.ProductRepository = (*productRepository)(nil)
 
 func (pr productRepository) CreateProduct(ctx context.Context, product domain.Product) (int, error) {
-	const op cerrors.Op = "product/productRepository/createProduct"
+	const op cerrors.Op = "product/productRepository/CreateProduct"
 
-	createProductQuery := "INSERT INTO `products` (user_id, initial, category, price, cost, name, description, barcode, expiry_date, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 	result, err := pr.sqlDB.ExecContext(
 		ctx,
 		createProductQuery,
@@ -58,9 +58,9 @@ func (pr productRepository) GetProduct(ctx context.Context, productID int) (*dom
 	err := pr.sqlDB.QueryRowContext(ctx, findProductByIDQuery, productID).
 		Scan(
 			&product.ID,
-			&product.CreatedDate,
-			&product.UpdatedDate,
-			&product.DeletedDate,
+			&product.CreateDate,
+			&product.UpdateDate,
+			&product.DeleteDate,
 			&product.UserID,
 			&product.Initial,
 			&product.Category,
@@ -83,7 +83,7 @@ func (pr productRepository) GetProduct(ctx context.Context, productID int) (*dom
 }
 
 func (pr productRepository) UpdateProduct(ctx context.Context, product domain.Product) error {
-	const op cerrors.Op = "product/productRepository/updateProduct"
+	const op cerrors.Op = "product/productRepository/UpdateProduct"
 
 	_, err := pr.sqlDB.ExecContext(
 		ctx,
@@ -107,7 +107,7 @@ func (pr productRepository) UpdateProduct(ctx context.Context, product domain.Pr
 }
 
 func (pr productRepository) DeleteProduct(ctx context.Context, productID int) error {
-	const op cerrors.Op = "product/productRepository/deleteProduct"
+	const op cerrors.Op = "product/productRepository/DeleteProduct"
 
 	_, err := pr.sqlDB.ExecContext(ctx, deleteProductQuery, time.Now().UTC(), productID)
 	if err != nil {
@@ -117,7 +117,46 @@ func (pr productRepository) DeleteProduct(ctx context.Context, productID int) er
 	return nil
 }
 
-func (pr productRepository) ListProducts(ctx context.Context) ([]domain.Product, error) {
-	//TODO implement me
-	panic("implement me")
+func (pr productRepository) ListProducts(ctx context.Context, params domain.ListProductsParams) ([]domain.Product, error) {
+	const op cerrors.Op = "product/productRepository/ListProducts"
+
+	var products []domain.Product
+
+	query := fmt.Sprintf(listProductsQuery,
+		params.LikeInitial(),
+		params.LikeName(),
+		params.AfterCursor(),
+	)
+
+	rows, err := pr.sqlDB.QueryContext(ctx, query, params.UserID)
+	if err != nil {
+		return nil, cerrors.E(op, cerrors.Internal, err, "서버 에러가 발생했습니다.")
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var product domain.Product
+		err := rows.Scan(
+			&product.ID,
+			&product.CreateDate,
+			&product.UpdateDate,
+			&product.DeleteDate,
+			&product.UserID,
+			&product.Initial,
+			&product.Category,
+			&product.Price,
+			&product.Cost,
+			&product.Name,
+			&product.Description,
+			&product.Barcode,
+			&product.ExpiryDate,
+			&product.Size,
+		)
+		if err != nil {
+			return nil, cerrors.E(op, cerrors.Internal, err, "서버 에러가 발생했습니다.")
+		}
+		products = append(products, product)
+	}
+
+	return products, nil
 }

@@ -1,30 +1,31 @@
 package domain
 
 import (
-	cerrors "payhere/pkg/cerror"
+	"fmt"
+	cerrors "payhere/pkg/cerrors"
 	"time"
 )
 
 type ProductDTO struct {
 	BaseDTO
-	UserID      int             `json:"userID"`
-	Initial     string          `json:"initial"`
-	Category    string          `json:"category"`
-	Price       float64         `json:"price"`
-	Cost        float64         `json:"cost"`
-	Name        string          `json:"name"`
-	Description string          `json:"description"`
-	Barcode     string          `json:"barcode"`
-	ExpiryDate  time.Time       `json:"expiryDate"`
-	Size        ProductSizeType `json:"size"`
+	UserID      int             `json:"userID" validate:"required" example:"1"`
+	Initial     string          `json:"initial" validate:"required" example:"ㅅㅋㄹ ㄹㄸ"`
+	Category    string          `json:"category" validate:"required" example:"payhere"`
+	Price       float64         `json:"price" validate:"required" example:"1000"`
+	Cost        float64         `json:"cost" validate:"required" example:"500"`
+	Name        string          `json:"name" validate:"required" example:"슈크림 라떼"`
+	Description string          `json:"description" validate:"required" example:"슈크림 라떼 팔아요"`
+	Barcode     string          `json:"barcode" validate:"required" example:"25611234"`
+	ExpiryDate  time.Time       `json:"expiryDate" validate:"required" example:"2024-02-28T15:04:05Z"`
+	Size        ProductSizeType `json:"size" validate:"required" enum:"small,large" example:"large"`
 }
 
 func ProductDTOFrom(domain Product) ProductDTO {
 	dto := ProductDTO{
 		BaseDTO: BaseDTO{
-			ID:          domain.ID,
-			CreatedDate: domain.CreatedDate,
-			UpdatedDate: domain.UpdatedDate,
+			ID:         domain.ID,
+			CreateDate: domain.CreateDate,
+			UpdateDate: domain.UpdateDate,
 		},
 		UserID:      domain.UserID,
 		Initial:     domain.Initial,
@@ -38,23 +39,19 @@ func ProductDTOFrom(domain Product) ProductDTO {
 		Size:        domain.Size,
 	}
 
-	if domain.DeletedDate.Valid {
-		dto.DeletedDate = &domain.DeletedDate.Time
-	}
-
 	return dto
 }
 
 type CreateProductRequest struct {
-	UserID      int             `json:"userID"`
-	Category    string          `json:"category"`
-	Price       float64         `json:"price"`
-	Cost        float64         `json:"cost"`
-	Name        string          `json:"name"`
-	Description string          `json:"description"`
-	Barcode     string          `json:"barcode"`
-	ExpiryDate  time.Time       `json:"expiryDate"`
-	Size        ProductSizeType `json:"size"`
+	UserID      int             `swaggerignore:"true"`
+	Category    string          `json:"category" validate:"required" example:"payhere"`
+	Price       float64         `json:"price" validate:"required" example:"1000"`
+	Cost        float64         `json:"cost" validate:"required" example:"500"`
+	Name        string          `json:"name" validate:"required" example:"슈크림 라떼"`
+	Description string          `json:"description" validate:"required" example:"슈크림 라떼 팔아요"`
+	Barcode     string          `json:"barcode" validate:"required" example:"25611234"`
+	ExpiryDate  time.Time       `json:"expiryDate" validate:"required" example:"2024-02-28T15:04:05Z"`
+	Size        ProductSizeType `json:"size" validate:"required" enum:"small,large" example:"large"`
 }
 
 func (req CreateProductRequest) Validate() error {
@@ -115,16 +112,16 @@ type GetProductResponse struct {
 }
 
 type PatchProductRequest struct {
-	UserID      int
-	ID          int              `json:"id"`
-	Category    *string          `json:"category"`
-	Price       *float64         `json:"price"`
-	Cost        *float64         `json:"cost"`
-	Name        *string          `json:"name"`
-	Description *string          `json:"description"`
-	Barcode     *string          `json:"barcode"`
-	ExpiryDate  *time.Time       `json:"expiryDate"`
-	Size        *ProductSizeType `json:"size"`
+	UserID      int              `swaggerignore:"true"`
+	ID          int              `json:"id" validate:"required" example:"1"`
+	Category    *string          `json:"category" validate:"omitempty" example:"payhere"`
+	Price       *float64         `json:"price" validate:"omitempty" example:"1000"`
+	Cost        *float64         `json:"cost" validate:"omitempty" example:"500"`
+	Name        *string          `json:"name" validate:"omitempty" example:"슈크림 라떼"`
+	Description *string          `json:"description" validate:"omitempty" example:"슈크림 라떼 팔아요"`
+	Barcode     *string          `json:"barcode" validate:"omitempty" example:"25611234"`
+	ExpiryDate  *time.Time       `json:"expiryDate" validate:"omitempty" example:"2024-02-28T15:04:05Z"`
+	Size        *ProductSizeType `json:"size" validate:"omitempty" enum:"small,large" example:"large"`
 }
 
 func (req PatchProductRequest) Validate() error {
@@ -180,8 +177,44 @@ func (req DeleteProductRequest) Validate() error {
 	return nil
 }
 
+type ListProductsParams struct {
+	UserID  int
+	Cursor  *int
+	Name    *string
+	Initial *string
+}
+
+func (lp ListProductsParams) LikeName() string {
+	if lp.Name == nil {
+		return ""
+	}
+
+	return fmt.Sprintf("AND name LIKE '%%%s%%'", *lp.Name)
+}
+
+func (lp ListProductsParams) LikeInitial() string {
+	if lp.Initial == nil {
+		return ""
+	}
+
+	return fmt.Sprintf("AND initial LIKE '%%%s%%'", *lp.Initial)
+}
+
+func (lp ListProductsParams) AfterCursor() string {
+	if lp.Cursor == nil {
+		return ""
+	}
+
+	return fmt.Sprintf("AND id > %d", *lp.Cursor)
+}
+
 type ListProductsRequest struct {
+	UserID int
+	Cursor *int    `form:"cursor"`
+	Search *string `form:"search"`
 }
 
 type ListProductsResponse struct {
+	Products []ProductDTO `json:"products"`
+	Cursor   *int         `json:"cursor"`
 }

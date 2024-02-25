@@ -59,7 +59,7 @@ func Test_userRepository_CreateUser(t *testing.T) {
 				},
 			},
 			mock: func(ts userRepositoryTestSuite) {
-				ts.sqlMock.ExpectExec("INSERT INTO `users`").
+				ts.sqlMock.ExpectExec("INSERT INTO users").
 					WithArgs("01012345678", "password", "PLACE").
 					WillReturnResult(sqlmock.NewResult(1, 1))
 			},
@@ -77,7 +77,7 @@ func Test_userRepository_CreateUser(t *testing.T) {
 				},
 			},
 			mock: func(ts userRepositoryTestSuite) {
-				ts.sqlMock.ExpectExec("INSERT INTO `users`").
+				ts.sqlMock.ExpectExec("INSERT INTO users").
 					WithArgs("01012345678", "password", "PLACE").
 					WillReturnError(&mysql.MySQLError{Number: 1062, Message: "Duplicate entry"})
 			},
@@ -104,7 +104,7 @@ func Test_userRepository_CreateUser(t *testing.T) {
 	}
 }
 
-func Test_userRepository_FindByUserID(t *testing.T) {
+func Test_userRepository_FindUserByMobileID(t *testing.T) {
 	type args struct {
 		ctx    context.Context
 		userID string
@@ -124,7 +124,7 @@ func Test_userRepository_FindByUserID(t *testing.T) {
 				userID: "01012345678",
 			},
 			mock: func(ts userRepositoryTestSuite) {
-				query := "SELECT id, mobile_id, password, use_type FROM `users`"
+				query := "SELECT id, mobile_id, password, use_type FROM users"
 				columns := []string{"id", "user_id", "password", "user_type"}
 				rows := sqlmock.NewRows(columns).AddRow(1, "01012345678", "password", "PLACE")
 				ts.sqlMock.ExpectQuery(query).WithArgs("01012345678").WillReturnRows(rows)
@@ -146,7 +146,7 @@ func Test_userRepository_FindByUserID(t *testing.T) {
 				userID: "01012345678",
 			},
 			mock: func(ts userRepositoryTestSuite) {
-				query := "SELECT id, mobile_id, password, use_type FROM `users`"
+				query := "SELECT id, mobile_id, password, use_type FROM users"
 				ts.sqlMock.ExpectQuery(query).WithArgs("01012345678").WillReturnError(sql.ErrNoRows)
 			},
 			want:    nil,

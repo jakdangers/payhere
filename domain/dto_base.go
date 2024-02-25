@@ -16,10 +16,9 @@ type PayhereResponse struct {
 }
 
 type BaseDTO struct {
-	ID          int        `json:"id"`
-	CreatedDate time.Time  `json:"createdDate"`
-	UpdatedDate time.Time  `json:"updatedDate"`
-	DeletedDate *time.Time `json:"deletedDate"`
+	ID         int       `json:"id" validate:"required" example:"1"`
+	CreateDate time.Time `json:"createDate" validate:"required" example:"2024-02-28T15:04:05Z"`
+	UpdateDate time.Time `json:"updateDate" validate:"required" example:"2024-02-28T15:04:05Z"`
 }
 
 func PayhereResponseFrom(code int, data any) (int, PayhereResponse) {

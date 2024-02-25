@@ -970,3 +970,106 @@ func Test_productController_DeleteProduct(t *testing.T) {
 		})
 	}
 }
+
+func Test_productController_ListProducts(t *testing.T) {
+	tests := []struct {
+		name  string
+		query func() string
+		mock  func(ts productControllerTestSuite)
+		code  int
+	}{
+		{
+			name: "PASS - 유효한 커서와 검색어",
+			query: func() string {
+				params := url.Values{}
+				params.Add("cursor", "1")
+				params.Add("search", "슈크림 라떼")
+				return params.Encode()
+			},
+			mock: func(ts productControllerTestSuite) {
+				ts.autRepository.EXPECT().FindAuthTokenByUserIDAndJwtToken(
+					mock.Anything,
+					mock.MatchedBy(func(params domain.FindByUserIDAndJwtTokenParams) bool { return params.UserID == 1 }),
+				).Return(domain.AuthToken{
+					ExpirationTime: time.Now().UTC().Add(time.Hour * time.Duration(24)),
+					Active:         true,
+				}, nil).Once()
+				ts.productService.EXPECT().ListProducts(mock.Anything, domain.ListProductsRequest{
+					UserID: 1,
+					Cursor: pointer.Int(1),
+					Search: pointer.String("슈크림 라떼"),
+				}).Return(domain.ListProductsResponse{}, nil).Once()
+			},
+			code: http.StatusOK,
+		},
+		{
+			name: "PASS - 커서만 입력",
+			query: func() string {
+				params := url.Values{}
+				params.Add("cursor", "1")
+				return params.Encode()
+			},
+			mock: func(ts productControllerTestSuite) {
+				ts.autRepository.EXPECT().FindAuthTokenByUserIDAndJwtToken(
+					mock.Anything,
+					mock.MatchedBy(func(params domain.FindByUserIDAndJwtTokenParams) bool { return params.UserID == 1 }),
+				).Return(domain.AuthToken{
+					ExpirationTime: time.Now().UTC().Add(time.Hour * time.Duration(24)),
+					Active:         true,
+				}, nil).Once()
+				ts.productService.EXPECT().ListProducts(mock.Anything, domain.ListProductsRequest{
+					UserID: 1,
+					Cursor: pointer.Int(1),
+				}).Return(domain.ListProductsResponse{}, nil).Once()
+			},
+			code: http.StatusOK,
+		},
+		{
+			name: "PASS - 검색어만 입력",
+			query: func() string {
+				params := url.Values{}
+				params.Add("search", "슈크림 라떼")
+				return params.Encode()
+			},
+			mock: func(ts productControllerTestSuite) {
+				ts.autRepository.EXPECT().FindAuthTokenByUserIDAndJwtToken(
+					mock.Anything,
+					mock.MatchedBy(func(params domain.FindByUserIDAndJwtTokenParams) bool { return params.UserID == 1 }),
+				).Return(domain.AuthToken{
+					ExpirationTime: time.Now().UTC().Add(time.Hour * time.Duration(24)),
+					Active:         true,
+				}, nil).Once()
+				ts.productService.EXPECT().ListProducts(mock.Anything, domain.ListProductsRequest{
+					UserID: 1,
+					Search: pointer.String("슈크림 라떼"),
+				}).Return(domain.ListProductsResponse{}, nil).Once()
+			},
+			code: http.StatusOK,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			ts := setupProductControllerTestSuite(t)
+			tt.mock(ts)
+			req, _ := http.NewRequest(http.MethodGet, "/products", nil)
+			req.URL.RawQuery = tt.query()
+			token, _ := auth_token.CreateAccessToken(domain.User{
+				Base: domain.Base{
+					ID: 1,
+				},
+			}, ts.cfg.Auth.Secret, time.Now().UTC().Add(time.Hour*time.Duration(24)))
+			req.Header.Set("Authorization", "Bearer "+token)
+
+			// when
+			rec := httptest.NewRecorder()
+			t.Logf("Request URL: %s", req.URL.String())
+			ts.router.ServeHTTP(rec, req)
+
+			// then
+			assert.Equal(t, tt.code, rec.Code)
+			ts.productService.AssertExpectations(t)
+		})
+	}
+}

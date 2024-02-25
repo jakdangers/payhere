@@ -6,7 +6,7 @@ import (
 	"payhere/config"
 	"payhere/domain"
 	"payhere/internal/auth_token"
-	cerrors "payhere/pkg/cerror"
+	cerrors "payhere/pkg/cerrors"
 	"regexp"
 	"time"
 )

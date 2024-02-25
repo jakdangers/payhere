@@ -1,4 +1,358 @@
+definitions:
+  domain.CreateProductRequest:
+    properties:
+      barcode:
+        example: "25611234"
+        type: string
+      category:
+        example: payhere
+        type: string
+      cost:
+        example: 500
+        type: number
+      description:
+        example: 슈크림 라떼 팔아요
+        type: string
+      expiryDate:
+        example: "2024-02-28T15:04:05Z"
+        type: string
+      name:
+        example: 슈크림 라떼
+        type: string
+      price:
+        example: 1000
+        type: number
+      size:
+        allOf:
+        - $ref: '#/definitions/domain.ProductSizeType'
+        example: large
+    required:
+    - barcode
+    - category
+    - cost
+    - description
+    - expiryDate
+    - name
+    - price
+    - size
+    type: object
+  domain.CreateUserRequest:
+    properties:
+      mobileID:
+        example: "01012345678"
+        type: string
+      password:
+        example: "1234"
+        type: string
+    required:
+    - mobileID
+    - password
+    type: object
+  domain.GetProductResponse:
+    properties:
+      product:
+        $ref: '#/definitions/domain.ProductDTO'
+    type: object
+  domain.ListProductsResponse:
+    properties:
+      cursor:
+        type: integer
+      products:
+        items:
+          $ref: '#/definitions/domain.ProductDTO'
+        type: array
+    type: object
+  domain.LoginUserRequest:
+    properties:
+      mobileID:
+        example: "01012345678"
+        type: string
+      password:
+        example: "1234"
+        type: string
+    required:
+    - mobileID
+    - password
+    type: object
+  domain.LoginUserResponse:
+    properties:
+      accessToken:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDg4ODgxOTIsInVzZXJJRCI6MX0.WVQGpeNbCpWSKuvYO7rFv6HoXaEA4_VQZSl7oMhmROk
+        type: string
+      expiresIn:
+        example: 1708888192
+        type: integer
+    required:
+    - accessToken
+    - expiresIn
+    type: object
+  domain.PatchProductRequest:
+    properties:
+      barcode:
+        example: "25611234"
+        type: string
+      category:
+        example: payhere
+        type: string
+      cost:
+        example: 500
+        type: number
+      description:
+        example: 슈크림 라떼 팔아요
+        type: string
+      expiryDate:
+        example: "2024-02-28T15:04:05Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: 슈크림 라떼
+        type: string
+      price:
+        example: 1000
+        type: number
+      size:
+        allOf:
+        - $ref: '#/definitions/domain.ProductSizeType'
+        example: large
+    required:
+    - id
+    type: object
+  domain.ProductDTO:
+    properties:
+      barcode:
+        example: "25611234"
+        type: string
+      category:
+        example: payhere
+        type: string
+      cost:
+        example: 500
+        type: number
+      createDate:
+        example: "2024-02-28T15:04:05Z"
+        type: string
+      description:
+        example: 슈크림 라떼 팔아요
+        type: string
+      expiryDate:
+        example: "2024-02-28T15:04:05Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      initial:
+        example: ㅅㅋㄹ ㄹㄸ
+        type: string
+      name:
+        example: 슈크림 라떼
+        type: string
+      price:
+        example: 1000
+        type: number
+      size:
+        allOf:
+        - $ref: '#/definitions/domain.ProductSizeType'
+        example: large
+      updateDate:
+        example: "2024-02-28T15:04:05Z"
+        type: string
+      userID:
+        example: 1
+        type: integer
+    required:
+    - barcode
+    - category
+    - cost
+    - createDate
+    - description
+    - expiryDate
+    - id
+    - initial
+    - name
+    - price
+    - size
+    - updateDate
+    - userID
+    type: object
+  domain.ProductSizeType:
+    enum:
+    - small
+    - large
+    type: string
+    x-enum-varnames:
+    - ProductSizeTypeSmall
+    - ProductSizeTypeLarge
 info:
   contact: {}
-paths: {}
+paths:
+  /products:
+    get:
+      description: 상품 목록을 조회합니다.
+      parameters:
+      - description: 커서
+        in: query
+        name: cursor
+        type: integer
+      - description: 검색어
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 상품 목록
+          schema:
+            $ref: '#/definitions/domain.ListProductsResponse'
+      security:
+      - BearerAuth: []
+      summary: 상품 목록 조회
+      tags:
+      - Product
+    patch:
+      consumes:
+      - application/json
+      description: 특정 상품 ID로 상품을 전체 또는 부분 수정합니다. (단 자신의 상품만 수정 가능)
+      parameters:
+      - description: 상품 수정 요청
+        in: body
+        name: PatchProductRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.PatchProductRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: 전체 또는 부분 상품 수정
+      tags:
+      - Product
+    post:
+      consumes:
+      - application/json
+      description: 필수 항목을 입력하여 상품을 생성합니다.
+      parameters:
+      - description: 상품 생성 요청
+        in: body
+        name: CreateProductRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: 상품 생성
+      tags:
+      - Product
+  /products/{id}:
+    delete:
+      description: 상품 ID로 상품을 삭제합니다. (단 자신의 상품만 삭제 가능)
+      parameters:
+      - description: 제품 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: 상품 삭제
+      tags:
+      - Product
+    get:
+      description: 상품 ID로 상품을 조회합니다. (단 자신의 상품만 조회 가능)
+      parameters:
+      - description: 상품 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 상품 상세 정보
+          schema:
+            $ref: '#/definitions/domain.GetProductResponse'
+      security:
+      - BearerAuth: []
+      summary: 단일 상품 조회
+      tags:
+      - Product
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: 사장님은 휴대폰 번호와 비밀번호로 회원가입을 합니다.
+      parameters:
+      - description: 회원가입 요청
+        in: body
+        name: CreateUserRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: 회원가입
+      tags:
+      - User
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: '휴대폰 번호와 비밀번호로 로그인합니다. 예시 휴대폰번호: 01012345678, 비밀번호: 1234은 init.sql에서
+        등록 되어 있습니다. (더미 상품 바인딩용)'
+      parameters:
+      - description: 로그인 요청
+        in: body
+        name: LoginUserRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.LoginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.LoginUserResponse'
+      summary: 로그인
+      tags:
+      - User
+  /users/logout:
+    post:
+      consumes:
+      - application/json
+      description: 엑세스 토큰을 비활성화하고 로그아웃 처리합니다.
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: 로그아웃
+      tags:
+      - User
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

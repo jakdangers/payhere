@@ -411,7 +411,313 @@ func Test_productService_DeleteProduct(t *testing.T) {
 	}
 }
 
-func Test_ExtractChosung(t *testing.T) {
+func Test_productService_ListProducts(t *testing.T) {
+	type args struct {
+		ctx context.Context
+		req domain.ListProductsRequest
+	}
+
+	tests := []struct {
+		name    string
+		args    args
+		mock    func(ts productServiceTestSuite)
+		want    domain.ListProductsResponse
+		wantErr bool
+	}{
+		{
+			name: "PASS - 조건 없이 조회",
+			args: args{
+				ctx: context.Background(),
+				req: domain.ListProductsRequest{
+					UserID: 1,
+					Cursor: nil,
+					Search: nil,
+				},
+			},
+			mock: func(ts productServiceTestSuite) {
+				ts.productRepository.EXPECT().ListProducts(mock.Anything, domain.ListProductsParams{
+					UserID: 1,
+					Cursor: nil,
+					Name:   nil,
+				}).Return([]domain.Product{
+					{
+						Base: domain.Base{
+							ID: 1,
+						},
+						UserID:      1,
+						Initial:     "ㅅㅋㄹ ㄹㄸ",
+						Category:    "payhere",
+						Price:       1000,
+						Cost:        500,
+						Name:        "슈크림 라떼",
+						Description: "description",
+						Barcode:     "barcode",
+						ExpiryDate:  time.Time{},
+						Size:        domain.ProductSizeTypeSmall,
+					},
+				}, nil).Once()
+			},
+			want: domain.ListProductsResponse{
+				Products: []domain.ProductDTO{
+					{
+						BaseDTO: domain.BaseDTO{
+							ID: 1,
+						},
+						UserID:      1,
+						Initial:     "ㅅㅋㄹ ㄹㄸ",
+						Category:    "payhere",
+						Price:       1000,
+						Cost:        500,
+						Name:        "슈크림 라떼",
+						Description: "description",
+						Barcode:     "barcode",
+						ExpiryDate:  time.Time{},
+						Size:        domain.ProductSizeTypeSmall,
+					},
+				},
+				Cursor: pointer.Int(1),
+			},
+			wantErr: false,
+		},
+		{
+			name: "PASS - 커서 값이 있는 경우",
+			args: args{
+				ctx: context.Background(),
+				req: domain.ListProductsRequest{
+					UserID: 1,
+					Cursor: pointer.Int(10),
+					Search: nil,
+				},
+			},
+			mock: func(ts productServiceTestSuite) {
+				ts.productRepository.EXPECT().ListProducts(mock.Anything, domain.ListProductsParams{
+					UserID: 1,
+					Cursor: pointer.Int(10),
+				}).Return([]domain.Product{
+					{
+						Base: domain.Base{
+							ID: 11,
+						},
+						UserID:      1,
+						Initial:     "ㅅㅋㄹ ㄹㄸ",
+						Category:    "payhere",
+						Price:       1000,
+						Cost:        500,
+						Name:        "슈크림 라떼",
+						Description: "description",
+						Barcode:     "barcode",
+						ExpiryDate:  time.Time{},
+						Size:        domain.ProductSizeTypeSmall,
+					},
+				}, nil).Once()
+			},
+			want: domain.ListProductsResponse{
+				Products: []domain.ProductDTO{
+					{
+						BaseDTO: domain.BaseDTO{
+							ID: 11,
+						},
+						UserID:      1,
+						Initial:     "ㅅㅋㄹ ㄹㄸ",
+						Category:    "payhere",
+						Price:       1000,
+						Cost:        500,
+						Name:        "슈크림 라떼",
+						Description: "description",
+						Barcode:     "barcode",
+						ExpiryDate:  time.Time{},
+						Size:        domain.ProductSizeTypeSmall,
+					},
+				},
+				Cursor: pointer.Int(11),
+			},
+			wantErr: false,
+		},
+		{
+			name: "PASS - 검색 조건 한글 초성만 있는 경우",
+			args: args{
+				ctx: context.Background(),
+				req: domain.ListProductsRequest{
+					UserID: 1,
+					Cursor: nil,
+					Search: pointer.String("ㅅㅋㄹ"),
+				},
+			},
+			mock: func(ts productServiceTestSuite) {
+				ts.productRepository.EXPECT().ListProducts(mock.Anything, domain.ListProductsParams{
+					UserID:  1,
+					Initial: pointer.String("ㅅㅋㄹ"),
+				}).Return([]domain.Product{
+					{
+						Base: domain.Base{
+							ID: 11,
+						},
+						UserID:      1,
+						Initial:     "ㅅㅋㄹ ㄹㄸ",
+						Category:    "payhere",
+						Price:       1000,
+						Cost:        500,
+						Name:        "슈크림 라떼",
+						Description: "description",
+						Barcode:     "barcode",
+						ExpiryDate:  time.Time{},
+						Size:        domain.ProductSizeTypeSmall,
+					},
+				}, nil).Once()
+			},
+			want: domain.ListProductsResponse{
+				Products: []domain.ProductDTO{
+					{
+						BaseDTO: domain.BaseDTO{
+							ID: 11,
+						},
+						UserID:      1,
+						Initial:     "ㅅㅋㄹ ㄹㄸ",
+						Category:    "payhere",
+						Price:       1000,
+						Cost:        500,
+						Name:        "슈크림 라떼",
+						Description: "description",
+						Barcode:     "barcode",
+						ExpiryDate:  time.Time{},
+						Size:        domain.ProductSizeTypeSmall,
+					},
+				},
+				Cursor: pointer.Int(11),
+			},
+			wantErr: false,
+		},
+		{
+			name: "PASS - 검색 조건 한글 문자가 있는 경우",
+			args: args{
+				ctx: context.Background(),
+				req: domain.ListProductsRequest{
+					UserID: 1,
+					Cursor: nil,
+					Search: pointer.String("슈크림"),
+				},
+			},
+			mock: func(ts productServiceTestSuite) {
+				ts.productRepository.EXPECT().ListProducts(mock.Anything, domain.ListProductsParams{
+					UserID: 1,
+					Name:   pointer.String("슈크림"),
+				}).Return([]domain.Product{
+					{
+						Base: domain.Base{
+							ID: 11,
+						},
+						UserID:      1,
+						Initial:     "ㅅㅋㄹ ㄹㄸ",
+						Category:    "payhere",
+						Price:       1000,
+						Cost:        500,
+						Name:        "슈크림 라떼",
+						Description: "description",
+						Barcode:     "barcode",
+						ExpiryDate:  time.Time{},
+						Size:        domain.ProductSizeTypeSmall,
+					},
+				}, nil).Once()
+			},
+			want: domain.ListProductsResponse{
+				Products: []domain.ProductDTO{
+					{
+						BaseDTO: domain.BaseDTO{
+							ID: 11,
+						},
+						UserID:      1,
+						Initial:     "ㅅㅋㄹ ㄹㄸ",
+						Category:    "payhere",
+						Price:       1000,
+						Cost:        500,
+						Name:        "슈크림 라떼",
+						Description: "description",
+						Barcode:     "barcode",
+						ExpiryDate:  time.Time{},
+						Size:        domain.ProductSizeTypeSmall,
+					},
+				},
+				Cursor: pointer.Int(11),
+			},
+			wantErr: false,
+		},
+		{
+			name: "PASS - 검색 조건이 영어인 경우",
+			args: args{
+				ctx: context.Background(),
+				req: domain.ListProductsRequest{
+					UserID: 1,
+					Cursor: nil,
+					Search: pointer.String("search"),
+				},
+			},
+			mock: func(ts productServiceTestSuite) {
+				ts.productRepository.EXPECT().ListProducts(mock.Anything, domain.ListProductsParams{
+					UserID: 1,
+					Name:   pointer.String("search"),
+				}).Return([]domain.Product{
+					{
+						Base: domain.Base{
+							ID: 11,
+						},
+						UserID:      1,
+						Initial:     "search",
+						Category:    "payhere",
+						Price:       1000,
+						Cost:        500,
+						Name:        "search",
+						Description: "description",
+						Barcode:     "barcode",
+						ExpiryDate:  time.Time{},
+						Size:        domain.ProductSizeTypeSmall,
+					},
+				}, nil).Once()
+			},
+			want: domain.ListProductsResponse{
+				Products: []domain.ProductDTO{
+					{
+						BaseDTO: domain.BaseDTO{
+							ID: 11,
+						},
+						UserID:      1,
+						Initial:     "search",
+						Category:    "payhere",
+						Price:       1000,
+						Cost:        500,
+						Name:        "search",
+						Description: "description",
+						Barcode:     "barcode",
+						ExpiryDate:  time.Time{},
+						Size:        domain.ProductSizeTypeSmall,
+					},
+				},
+				Cursor: pointer.Int(11),
+			},
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			ts := setupUserServiceTestSuite(t)
+			tt.mock(ts)
+
+			// when
+			got, err := ts.productService.ListProducts(tt.args.ctx, tt.args.req)
+
+			// then
+			ts.userRepository.AssertExpectations(t)
+			ts.productRepository.AssertExpectations(t)
+			assert.Equal(t, tt.want, got)
+			if err != nil {
+				assert.Equalf(t, tt.wantErr, err != nil, err.Error())
+			}
+		})
+	}
+}
+
+func Test_extractChosung(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    string
@@ -456,8 +762,30 @@ func Test_ExtractChosung(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := ExtractChosung(tt.input)
+			result := extractChosung(tt.input)
 			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func Test_isKoreanChosung(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    string
+		expected bool
+	}{
+		{"한글 초성만 있는 경우", "ㄱㄴㄷ", true},
+		{"한글 초성과 공백이 있는 경우", "ㄱㄴㅎ ㅁㅇ", true},
+		{"한글 초성과 특수 문자가 있는 경우", "ㄱㄴㅎ !@#$", true},
+		{"한글 초성과 영어가 있는 경우", "ㄱㄴㅎ abc", true},
+		{"한글 초성과 한글 문자가 있는 경우", "ㄱㄴㅎ 가나다", false},
+		{"한글 외 다른 문자만 있는 경우", "abc #!@", false},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := isKoreanChosung(tc.input)
+			assert.Equal(t, tc.expected, result)
 		})
 	}
 }

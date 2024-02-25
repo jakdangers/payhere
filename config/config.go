@@ -2,7 +2,6 @@ package config
 
 import (
 	"github.com/spf13/viper"
-	"go.uber.org/fx"
 	"log"
 )
 
@@ -35,8 +34,6 @@ type Auth struct {
 }
 
 var configMode = "dev"
-
-var Module = fx.Module("config", fx.Provide(NewConfig))
 
 func NewConfig() (*Config, error) {
 	cfg := new(Config)

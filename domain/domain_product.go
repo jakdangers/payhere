@@ -11,7 +11,7 @@ type ProductRepository interface {
 	GetProduct(ctx context.Context, productID int) (*Product, error)
 	UpdateProduct(ctx context.Context, product Product) error
 	DeleteProduct(ctx context.Context, productID int) error
-	ListProducts(ctx context.Context) ([]Product, error)
+	ListProducts(ctx context.Context, params ListProductsParams) ([]Product, error)
 }
 
 type ProductService interface {
@@ -53,8 +53,4 @@ type Product struct {
 	Barcode     string
 	ExpiryDate  time.Time
 	Size        ProductSizeType
-}
-
-func ToPointer[T any](v T) *T {
-	return &v
 }
