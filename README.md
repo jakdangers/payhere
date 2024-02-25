@@ -35,6 +35,42 @@ make test
 }
 ```
 
+| ID | Category | Name          | Initial |
+|----|----------|---------------|---------|
+| 1  | payhere  | 아메리카노   | ㅇㅁㄹㅋㄴ  |
+| 2  | payhere  | 카페라떼       | ㅋㅍㄹㄸ |
+| 3  | payhere  | 카페모카       | ㅋㅍㅁㅋ |
+| 4  | payhere  | 헤이즐넛라떼 | ㅎㅇㅈㄴㄹㄸ |
+| 5  | payhere  | 바닐라라떼   | ㅂㄷㄴㄹㄸ |
+| 6  | payhere  | 카푸치노       | ㅋㅍㅊㄴ |
+| 7  | payhere  | 모카라떼       | ㅁㅋㄹㄸ |
+| 8  | payhere  | 콜드브루       | ㅋㄷㅂㄹ |
+| 9  | payhere  | 아이스티       | ㅇㅇㅅㅌ |
+| 10 | payhere  | 스무디         | ㅅㅁㄷ   |
+| 11 | payhere  | 플레인요거트 | ㅍㄹㅇㅇㄱㅌ |
+| 12 | payhere  | 딸기요거트     | ㄸㄱㅇㄱㅌ |
+| 13 | payhere  | 딸기 요거트   | ㄸㄱ ㅇㄱㅌ |
+| 14 | payhere  | 블루베리 요거트 | ㅂㄹㅂㄹ ㅇㄱㅌ |
+| 15 | payhere  | 치즈 케이크   | ㅊㅈ ㅋㅇㅋ |
+| 16 | payhere  | 초코 브라우니 | ㅊㅋ ㅂㄹㅇㄴ |
+| 17 | payhere  | 카라멜 마카롱 | ㅋㄹㅁ ㅁㅋㄹ |
+| 18 | payhere  | 말차 빙수     | ㅁㅊ ㅂㅅ   |
+| 19 | payhere  | 아이스크림   | ㅇㅇㅅㅋㄹㅁ |
+| 20 | payhere  | 딸기 쉐이크   | ㄸㄱ ㅅㅇㅋ |
+| 21 | payhere  | 바나나 크림   | ㅂㄴㄴ ㅋㄹ |
+| 22 | payhere  | 망고 스무디   | ㅁㄱ ㅅㅁㄷ |
+| 23 | fashion  | 나이키 운동화 | ㄴㅇㅋ ㅇㄷㅎ |
+| 24 | fashion  | 아디다스 운동화 | ㅇㄷㄷㅅ ㅇㄷㅎ |
+| 25 | fashion  | 지오다노 티셔츠 | ㅈㅇㄷㄴ ㅌㅅㅊ |
+| 26 | fashion  | 폴로 셔츠   | ㅍㄹ ㅅㅊ   |
+| 27 | fashion  | 구찌 반지갑 | ㄱㅉ ㅂㅈㄱ  |
+| 28 | fashion  | 루이비통 가방 | ㄹㅇㅂㅌ ㄱㅂ |
+| 29 | fashion  | 샤넬 향수   | ㅅㄴ ㅎㅅ   |
+| 30 | fashion  | 에르메스 벨트 | ㅇㄹㅁㅅ ㅂㅌ |
+| 31 | fashion  | 디올 클러치백 | ㄷㅇ ㅋㄹㅊㅂ |
+| 32 | fashion  | 프라다 선글라스 | ㅍㄹㄷ ㅅㄱㄹㅅ |
+
+
 다른 유저의 상품에 접근하지 못하는 것을 테스트하기 위한 유저 정보
 ```bash
 로그인 정보
@@ -44,19 +80,6 @@ make test
 }
 ```
 
-
-```python
-import foobar
-
-# returns 'words'
-foobar.pluralize('word')
-
-# returns 'geese'
-foobar.pluralize('goose')
-
-# returns 'phenomenon'
-foobar.singularize('phenomena')
-```
 # 구현 코드에 대한 생각
 
 ### 프로젝트 실행
