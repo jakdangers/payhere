@@ -5,13 +5,13 @@
 프로젝트 실행
 
 ```bash
-make compose-up       
+make compose-up    
 ```
 
 프로젝트 종료 (과제 앱의 이미지만 삭제하고 mysql 5.7은 삭제 하지 않습니다)
 
 ```bash
-make compose-clean     
+make compose-clean
 ```
 
 ## 단위 테스트
