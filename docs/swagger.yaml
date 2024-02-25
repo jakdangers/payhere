@@ -189,7 +189,7 @@ info:
 paths:
   /products:
     get:
-      description: 상품 목록을 조회합니다.
+      description: 상품 목록을 조회합니다. (단 자신의 상품만 조회 가능)
       parameters:
       - description: 커서
         in: query
@@ -214,7 +214,8 @@ paths:
     patch:
       consumes:
       - application/json
-      description: 특정 상품 ID로 상품을 전체 또는 부분 수정합니다. (단 자신의 상품만 수정 가능)
+      description: 상품의 필수 정보는 빈 값이 아니면 유효하고 가격과 원가는 0 이상이어야 합니다. 사이즈의 경우 small, large만
+        가능 (단 자신의 상품만 수정 가능)
       parameters:
       - description: 상품 수정 요청
         in: body
@@ -235,7 +236,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: 필수 항목을 입력하여 상품을 생성합니다.
+      description: 상품의 필수 정보는 빈 값이 아니면 유효하고 가격과 원가는 0 이상이어야 합니다. 사이즈의 경우 small, large만
+        가능
       parameters:
       - description: 상품 생성 요청
         in: body
@@ -273,7 +275,7 @@ paths:
       tags:
       - Product
     get:
-      description: 상품 ID로 상품을 조회합니다. (단 자신의 상품만 조회 가능)
+      description: 상품 ID로 상품을 조회합니다. (단 자신의 상품만 조회 가능, 상품 아이디는 1 ~ 32 까지)
       parameters:
       - description: 상품 ID
         in: path
@@ -296,7 +298,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: 사장님은 휴대폰 번호와 비밀번호로 회원가입을 합니다.
+      description: 사장님은 휴대폰 번호는 010-1234-5678, 01012345678 두개의 형식만 유효하고 비밀번호는 영문 대소문자,
+        숫자, 특수문자를 포함한 1자 이상 255자 이하의 문자열로 제한합니다.
       parameters:
       - description: 회원가입 요청
         in: body
@@ -316,8 +319,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: '휴대폰 번호와 비밀번호로 로그인합니다. 예시 휴대폰번호: 01012345678, 비밀번호: 1234은 init.sql에서
-        등록 되어 있습니다. (더미 상품 바인딩용)'
+      description: 휴대폰 번호의 형식은 010-1234-5678, 01012345678 두개의 형식만 유효합니다
       parameters:
       - description: 로그인 요청
         in: body
@@ -339,7 +341,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: 엑세스 토큰을 비활성화하고 로그아웃 처리합니다.
+      description: 엑세스 토큰을 비활성화하고 로그아웃 처리합니다. (로그인 상태에서만 가능)
       produces:
       - application/json
       responses:
