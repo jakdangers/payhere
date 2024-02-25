@@ -192,7 +192,7 @@ func Test_authTokenRepository_DeactivateAuthToken(t *testing.T) {
 				},
 			},
 			mock: func(ts authTokenRepositoryTestSuite) {
-				ts.sqlMock.ExpectExec("UPDATE auth_tokens SET `active` = 0").
+				ts.sqlMock.ExpectExec("UPDATE auth_tokens SET active = 0").
 					WithArgs(1, "target_token").
 					WillReturnResult(sqlmock.NewResult(1, 1))
 			},
