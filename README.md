@@ -22,6 +22,10 @@ make test
 
 ### API 테스트 (API SPEC스팩은 스웨거)
 
+```bash
+http://localhost:3000/swagger/index.html#/
+```
+
 원할한 과제 테스트를 위해 swageer의 example을 추가하여 스웨거상에서 바로 실행 할 수 있도록 했습니다.
 
 또한 도커 컴포즈 실행시 init.sql을 통해 테스트 데이터를 삽입하였습니다.
