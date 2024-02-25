@@ -29,7 +29,7 @@ type Mysql struct {
 }
 
 type Auth struct {
-	Secret      string `mapstructure:"secret`
+	Secret      string `mapstructure:"secret"`
 	ExpiryHours int    `mapstructure:"expiryHours"`
 }
 
