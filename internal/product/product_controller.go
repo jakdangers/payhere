@@ -36,7 +36,7 @@ var _ domain.ProductController = (*productController)(nil)
 
 // CreateProduct
 // @Summary 상품 생성
-// @Description 필수 항목을 입력하여 상품을 생성합니다.
+// @Description 상품의 필수 정보는 빈 값이 아니면 유효하고 가격과 원가는 0 이상이어야 합니다. 사이즈의 경우 small, large만 가능
 // @Tags Product
 // @Accept json
 // @Produce json
@@ -77,7 +77,7 @@ func (pc productController) CreateProduct(c *gin.Context) {
 
 // GetProduct
 // @Summary 단일 상품 조회
-// @Description 상품 ID로 상품을 조회합니다. (단 자신의 상품만 조회 가능)
+// @Description 상품 ID로 상품을 조회합니다. (단 자신의 상품만 조회 가능, 상품 아이디는 1 ~ 32 까지)
 // @Tags Product
 // @Produce json
 // @Security BearerAuth
@@ -118,7 +118,7 @@ func (pc productController) GetProduct(c *gin.Context) {
 
 // PatchProduct
 // @Summary 전체 또는 부분 상품 수정
-// @Description 특정 상품 ID로 상품을 전체 또는 부분 수정합니다. (단 자신의 상품만 수정 가능)
+// @Description 상품의 필수 정보는 빈 값이 아니면 유효하고 가격과 원가는 0 이상이어야 합니다. 사이즈의 경우 small, large만 가능 (단 자신의 상품만 수정 가능)
 // @Tags Product
 // @Accept json
 // @Produce json
@@ -199,7 +199,7 @@ func (pc productController) DeleteProduct(c *gin.Context) {
 
 // ListProducts
 // @Summary 상품 목록 조회
-// @Description 상품 목록을 조회합니다.
+// @Description 상품 목록을 조회합니다. (단 자신의 상품만 조회 가능)
 // @Tags Product
 // @Produce json
 // @Param cursor query int false "커서"

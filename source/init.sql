@@ -43,7 +43,9 @@ CREATE TABLE auth_tokens
     INDEX idx_auth_tokens_jwt_token (jwt_token(255))
 );
 
-INSERT INTO users (mobile_id, password) VALUES ('01012345678', '$2a$10$y8k/LZCyzGRnWlFCB2DzOenf5cQWbsUQGyISzulWww.trbs4FwQeq');
+INSERT INTO users (mobile_id, password) VALUES ('01011111111', '$2a$10$y8k/LZCyzGRnWlFCB2DzOenf5cQWbsUQGyISzulWww.trbs4FwQeq');
+INSERT INTO users (mobile_id, password) VALUES ('01022222222', '$2a$10$y8k/LZCyzGRnWlFCB2DzOenf5cQWbsUQGyISzulWww.trbs4FwQeq');
+
 INSERT INTO products (category, user_id, name, initial, price, cost, description, barcode, expiry_date, size) VALUES ('payhere', 1, '아메리카노', 'ㅇㅁㄹㅋㄴ', 3000, 1500, '아메리카노 판매합니다.', '12345678', '2024-03-01 09:00:00', 'large');
 INSERT INTO products (category, user_id, name, initial, price, cost, description, barcode, expiry_date, size) VALUES ('payhere', 1, '카페라떼', 'ㅋㅍㄹㄸ', 3500, 1800, '카페라떼 판매합니다.', '23456789', '2024-03-01 09:30:00', 'small');
 INSERT INTO products (category, user_id, name, initial, price, cost, description, barcode, expiry_date, size) VALUES ('payhere', 1, '카페모카', 'ㅋㅍㅁㅋ', 3800, 2000, '카페모카 판매합니다.', '34567890', '2024-03-01 10:00:00', 'large');

@@ -7,11 +7,6 @@ run: swag ## 로컬 실행
 	@go mod tidy && go mod download && go run ./cmd/app/main.go
 .PHONY: run
 
-build-dev: swag ## 빌드 데브 컨테이너
-	@echo "build dev binary file"
-	@docker build -t payhere-app .
-.PHONY: build-dev
-
 swag: ### 스웨거 초기화
 	@echo "swag init"
 	@swag init -g cmd/app/main.go
@@ -22,10 +17,10 @@ mock: ### 목커리 실행
 .PHONY: mock
 
 test: ### 모든 테스트 실행
-	go test -v -cover -race ./internal/...
+	go test -v -cover -race ./internal/... ./domain/...
 .PHONY: test
 
-docker-build: ### 도커 컴포즈 빌드
+docker-build: swag ### 도커 컴포즈 빌드
 	docker build -t payhere-app .
 
 compose-clean: compose-down ### app 컨테이너 삭제
