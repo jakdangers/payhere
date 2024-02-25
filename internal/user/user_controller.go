@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"payhere/config"
 	"payhere/domain"
-	cerrors "payhere/pkg/cerror"
+	cerrors "payhere/pkg/cerrors"
 	"payhere/pkg/router"
 	"time"
 )
@@ -33,6 +33,15 @@ func NewUserController(service domain.UserService) *userController {
 
 var _ domain.UserController = (*userController)(nil)
 
+// CreateUser
+// @Tags User
+// @Summary 회원가입
+// @Description 사장님은 휴대폰 번호와 비밀번호로 회원가입을 합니다.
+// @Accept json
+// @Produce json
+// @Param CreateUserRequest body domain.CreateUserRequest true "회원가입 요청"
+// @Success 204
+// @Router /users [post]
 func (u userController) CreateUser(c *gin.Context) {
 	var req domain.CreateUserRequest
 
@@ -57,6 +66,15 @@ func (u userController) CreateUser(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+// LoginUser
+// @Tags User
+// @Summary 로그인
+// @Description 휴대폰 번호와 비밀번호로 로그인합니다. 예시 휴대폰번호: 01012345678, 비밀번호: 1234은 init.sql에서 등록 되어 있습니다. (더미 상품 바인딩용)
+// @Accept json
+// @Produce json
+// @Param LoginUserRequest body domain.LoginUserRequest true "로그인 요청"
+// @Success 200 {object} domain.LoginUserResponse
+// @Router /users/login [post]
 func (u userController) LoginUser(c *gin.Context) {
 	var req domain.LoginUserRequest
 
@@ -79,9 +97,18 @@ func (u userController) LoginUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, res)
+	c.JSON(domain.PayhereResponseFrom(http.StatusOK, res))
 }
 
+// LogoutUser
+// @Tags User
+// @Summary 로그아웃
+// @Description 엑세스 토큰을 비활성화하고 로그아웃 처리합니다.
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 204
+// @Router /users/logout [post]
 func (u userController) LogoutUser(c *gin.Context) {
 	userID, err := router.GetUserIDFromContext(c)
 	if err != nil {

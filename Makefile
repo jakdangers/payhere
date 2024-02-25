@@ -25,10 +25,16 @@ test: ### 모든 테스트 실행
 	go test -v -cover -race ./internal/...
 .PHONY: test
 
-compose-up: ### 도커 컴포즈 실행
+docker-build: ### 도커 컴포즈 빌드
+	docker build -t payhere-app .
+
+compose-clean: compose-down ### app 컨테이너 삭제
+	docker rmi --force payhere-app:latest
+
+compose-up: docker-build ### app을 빌드하고 mysql 5.7과 실행
 	docker-compose up -d
 .PHONY: compose-up
 
-compose-down: ### 도커 컴포즈 다운
+compose-down: ### app 실행 종료
 	docker-compose down
 .PHONY: compose-down

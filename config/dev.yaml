@@ -5,7 +5,7 @@ http:
   port: ':3000'
 
 mysql:
-  host: localhost
+  host: payhere-db
   port: 3306
   user: payhere
   dbName: payhere

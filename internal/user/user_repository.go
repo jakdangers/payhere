@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"payhere/domain"
-	cerrors "payhere/pkg/cerror"
+	cerrors "payhere/pkg/cerrors"
 )
 
 type userRepository struct {
