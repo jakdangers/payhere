@@ -16,7 +16,6 @@ const (
 	Invalid                // 유효하지 않은 행위를 한 경우.
 	Auth                   // 비인증.
 	Permission             // 권한이 옳바르지 않은 경우.
-	IO                     // I/O에 문제가 있는 경우 (네트워트 오류 등).
 	Exist                  // 이미 존재하는 경우.
 	NotExist               // 존재하지 않는 경우.
 	Internal               // 로직 오류의 경우.
@@ -77,6 +76,9 @@ func E(args ...interface{}) error {
 			e.Kind = arg
 		case error:
 			e.Err = arg
+		case *Error:
+			copy := *arg
+			e.Err = &copy
 		default:
 			return errors.New(fmt.Sprintf("unknown type %T, value %v in error call", arg, arg))
 		}
@@ -95,8 +97,6 @@ func (k Kind) String() string {
 		return "unauthorized"
 	case Permission:
 		return "permission denied"
-	case IO:
-		return "I/O error"
 	case Exist:
 		return "item already exists"
 	case NotExist:

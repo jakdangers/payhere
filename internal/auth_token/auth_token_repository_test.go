@@ -63,7 +63,7 @@ func Test_authTokenRepository_CreateAuthToken(t *testing.T) {
 				},
 			},
 			mock: func(ts authTokenRepositoryTestSuite) {
-				ts.sqlMock.ExpectExec("INSERT INTO `auth_tokens`").
+				ts.sqlMock.ExpectExec("INSERT INTO auth_tokens").
 					WithArgs(1, "jwt_token", creationTime, expirationTime, 1).
 					WillReturnResult(sqlmock.NewResult(1, 1))
 			},
@@ -116,7 +116,7 @@ func Test_authTokenRepository_FindAuthTokenByUserIDAndJwtToken(t *testing.T) {
 				},
 			},
 			mock: func(ts authTokenRepositoryTestSuite) {
-				query := "SELECT id, user_id, jwt_token, creation_time, expiration_time, active FROM `auth_tokens`"
+				query := "SELECT id, user_id, jwt_token, creation_time, expiration_time, active FROM auth_tokens"
 				columns := []string{"id", "user_id", "jwt_token", "creation_time", "expiration_time", "active"}
 				rows := sqlmock.NewRows(columns).AddRow(1, 1, "jwt_token", creationTime, expirationTime, true)
 				ts.sqlMock.ExpectQuery(query).WithArgs(1, "jwt_token").WillReturnRows(rows)
@@ -192,7 +192,7 @@ func Test_authTokenRepository_DeactivateAuthToken(t *testing.T) {
 				},
 			},
 			mock: func(ts authTokenRepositoryTestSuite) {
-				ts.sqlMock.ExpectExec("UPDATE `auth_tokens` SET `active` = 0").
+				ts.sqlMock.ExpectExec("UPDATE auth_tokens SET `active` = 0").
 					WithArgs(1, "target_token").
 					WillReturnResult(sqlmock.NewResult(1, 1))
 			},

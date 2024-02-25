@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"payhere/domain"
-	cerrors "payhere/pkg/cerror"
+	cerrors "payhere/pkg/cerrors"
 )
 
 const (

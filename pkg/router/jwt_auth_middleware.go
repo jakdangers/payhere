@@ -6,7 +6,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"payhere/domain"
-	cerrors "payhere/pkg/cerror"
+	cerrors "payhere/pkg/cerrors"
 	"strings"
 	"time"
 )
@@ -43,14 +43,14 @@ func JWTMiddleware(secret string, authTokenRepository domain.AuthTokenRepository
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			c.JSON(cerrors.NewSentinelAPIError(http.StatusUnauthorized, "Authorization header를 확인해주세요"))
+			c.JSON(cerrors.NewSentinelAPIError(http.StatusUnauthorized, "로그인 후 이용해주세요"))
 			c.Abort()
 			return
 		}
 
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
-			c.JSON(cerrors.NewSentinelAPIError(http.StatusUnauthorized, "Authorization header foramt를 확인해주세요"))
+			c.JSON(cerrors.NewSentinelAPIError(http.StatusUnauthorized, "로그인 후 이용해주세요"))
 			c.Abort()
 			return
 		}
@@ -58,14 +58,14 @@ func JWTMiddleware(secret string, authTokenRepository domain.AuthTokenRepository
 		tokenString := parts[1]
 		token, err := parseJWTToken(tokenString, secret)
 		if err != nil {
-			c.JSON(cerrors.NewSentinelAPIError(http.StatusUnauthorized, "잘못 된 JWT 토큰입니다"))
+			c.JSON(cerrors.NewSentinelAPIError(http.StatusUnauthorized, "올바르지 않은 토큰입니다"))
 			c.Abort()
 			return
 		}
 
 		userID, err := extractIDFromToken(token)
 		if err != nil {
-			c.JSON(cerrors.NewSentinelAPIError(http.StatusUnauthorized, "잘못 된 JWT 토큰입니다"))
+			c.JSON(cerrors.NewSentinelAPIError(http.StatusUnauthorized, "올바르지 않은 토큰입니다"))
 			c.Abort()
 			return
 		}
@@ -80,11 +80,11 @@ func JWTMiddleware(secret string, authTokenRepository domain.AuthTokenRepository
 			return
 		}
 		if !authToken.Active {
-			c.JSON(cerrors.NewSentinelAPIError(http.StatusUnauthorized, "만료 된 토큰입니다."))
+			c.JSON(cerrors.NewSentinelAPIError(http.StatusUnauthorized, "로그인이 만료 되었습니다."))
 			c.Abort()
 		}
 		if authToken.ExpirationTime.Before(time.Now().UTC()) {
-			c.JSON(cerrors.NewSentinelAPIError(http.StatusUnauthorized, "만료 된 토큰입니다."))
+			c.JSON(cerrors.NewSentinelAPIError(http.StatusUnauthorized, "로그인이 만료 되었습니다."))
 			c.Abort()
 		}
 

@@ -34,9 +34,9 @@ func ToSentinelAPIError(err error) (int, SentinelAPIError) {
 
 	if errors.As(err, &cErr) {
 		switch cErr.Kind {
-		case Other, Internal, IO:
+		case Other, Internal:
 			return NewSentinelAPIError(http.StatusInternalServerError, cErr.ServiceMessage)
-		case Invalid:
+		case Invalid, Permission:
 			return NewSentinelAPIError(http.StatusBadRequest, cErr.ServiceMessage)
 		case Auth:
 			return NewSentinelAPIError(http.StatusUnauthorized, cErr.ServiceMessage)

@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	cerrors "payhere/pkg/cerror"
+	cerrors "payhere/pkg/cerrors"
 )
 
 func GetUserIDFromContext(c *gin.Context) (int, error) {

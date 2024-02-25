@@ -1,7 +1,7 @@
 package domain
 
 import (
-	cerrors "payhere/pkg/cerror"
+	cerrors "payhere/pkg/cerrors"
 	"regexp"
 )
 
@@ -11,8 +11,8 @@ var (
 )
 
 type CreateUserRequest struct {
-	MobileID string `json:"mobileID"`
-	Password string `json:"password"`
+	MobileID string `json:"mobileID" validate:"required" example:"01012345678"`
+	Password string `json:"password" validate:"required" example:"1234"`
 }
 
 func (ur CreateUserRequest) Validate() error {
@@ -42,8 +42,8 @@ func isValidPassword(password string) bool {
 }
 
 type LoginUserRequest struct {
-	MobileID string `json:"mobileID"`
-	Password string `json:"password"`
+	MobileID string `json:"mobileID" validate:"required" example:"01012345678"`
+	Password string `json:"password" validate:"required" example:"1234"`
 }
 
 func (ur LoginUserRequest) Validate() error {
@@ -61,8 +61,8 @@ func (ur LoginUserRequest) Validate() error {
 }
 
 type LoginUserResponse struct {
-	AccessToken string `json:"accessToken"`
-	ExpiresIn   int64  `json:"expiresIn"`
+	AccessToken string `json:"accessToken" validate:"required" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDg4ODgxOTIsInVzZXJJRCI6MX0.WVQGpeNbCpWSKuvYO7rFv6HoXaEA4_VQZSl7oMhmROk"`
+	ExpiresIn   int64  `json:"expiresIn" validate:"required" example:"1708888192"`
 }
 
 type LogoutUserRequest struct {
