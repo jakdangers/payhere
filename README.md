@@ -93,7 +93,6 @@ http://localhost:3000/swagger/index.html#/
 ### 프로젝트 구조
 
 [고랭 클린 아키텍처](https://github.com/bxcodec/go-clean-arch)을 참고해서 프로젝트 구조를 만들었습니다.
-
 ![](https://velog.velcdn.com/images/jakdangers/post/87659488-6177-4e46-a793-1834abbd3e87/image.png)
 
 ### 추가 패키지 사용
